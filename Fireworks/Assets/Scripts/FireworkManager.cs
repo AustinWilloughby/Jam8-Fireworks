@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class FireworkManager : MonoBehaviour
 {
@@ -12,6 +13,11 @@ public class FireworkManager : MonoBehaviour
     public ParticleSystem explosion;
     public float timeBetweenLaunches = 10.0f;
     public Vector2 launchVelocity;
+    public Text colorText;
+    public AudioClip cheeringAudio;
+    public AudioClip booingAudio;
+    public AudioClip explosionAudio;
+    public AudioClip launchAudio;
     
     //Private
     private List<Firework> fireworks;
@@ -22,10 +28,15 @@ public class FireworkManager : MonoBehaviour
     private float launchTimer = 0;
     private FireworkColors nextColorCalled;
     private FireworkColors lastColorCalled;
+    private string cheering = "YAY!!!";
+    private string booing = "BOO!!!";
+    private AudioSource Audio;
     
     // Use this for initialization
     void Start()
     {
+        Audio = GetComponent<AudioSource>();
+      
         Vector2 almostTopLeft = GameObject.Find("Main Camera").GetComponent<Camera>().ViewportToWorldPoint(new Vector3(0, 1.0f));
         Vector2 almostBottomLeft = GameObject.Find("Main Camera").GetComponent<Camera>().ViewportToWorldPoint(new Vector3(0, .3f));
 
@@ -57,6 +68,8 @@ public class FireworkManager : MonoBehaviour
             //Just call it like: GetStringFromEnumValue(nextColorCalled), and use the string it returns to have the crowd shout.
             //There is also a method called GetColorFromEnumValue() which you can also pass nextColorCalled to get the Color object back
             //to use when you have the text draw. If you have any questions just message me @haroldthehobo in the discord channel.
+            colorText.GetComponent<Text>().text = GetStringFromEnumValue(nextColorCalled);
+            colorText.GetComponent<Text>().color = GetColorFromEnumValue(nextColorCalled);
             Debug.Log("We want " + GetStringFromEnumValue(nextColorCalled) + "!");
         }
         if (launchTimer <= -3.0f && fireworksLaunched == false)
@@ -82,6 +95,7 @@ public class FireworkManager : MonoBehaviour
                 {
                     fireworks[i].Launch(launchVelocity, true);
                     fireworks[i].gameObject.GetComponent<SpriteRenderer>().color = GetColorFromEnumValue(neededColor);
+                   Audio.PlayOneShot(launchAudio);
                 }
                 else
                 {
@@ -89,6 +103,7 @@ public class FireworkManager : MonoBehaviour
                     colors.Remove(unique);
                     fireworks[i].Launch(launchVelocity, false);
                     fireworks[i].gameObject.GetComponent<SpriteRenderer>().color = GetColorFromEnumValue(unique);
+                   // Audio.PlayOneShot(launchAudio);
                 }
             }
         }
@@ -101,17 +116,22 @@ public class FireworkManager : MonoBehaviour
             explosion.transform.position = fw.transform.position;
             explosion.startColor = fw.gameObject.GetComponent<SpriteRenderer>().color;
             explosion.Play();
+            Audio.PlayOneShot(explosionAudio);
             alreadyExploded = true;
 
             if(explosion.startColor == GetColorFromEnumValue(lastColorCalled))
             {
                 //RUCHITA - Handle crowd cheering here, player clicked the right color
+                colorText.GetComponent<Text>().text = cheering;
+                Audio.PlayOneShot(cheeringAudio);
                 Debug.Log("YAY!!!");
             }
             else
             {
                 //RUCHITA - Handle crowd booing here, player clicked the wrong color
-                Debug.Log("BOO!!!");
+               colorText.GetComponent<Text>().text = booing;
+               Audio.PlayOneShot(booingAudio);
+               Debug.Log("BOO!!!");
             }
 
             return true;
@@ -129,7 +149,7 @@ public class FireworkManager : MonoBehaviour
         bool launched = false;
         foreach (Firework work in fireworks) //Ensure all the fireworks have returned.
         {
-            if (work.IsFlying) { launched = true; }
+            if (work.IsFlying) { launched = true;}
         }
         fireworksLaunched = launched;
         return fireworksLaunched;
@@ -140,6 +160,8 @@ public class FireworkManager : MonoBehaviour
         if(fireworksLaunched && !alreadyExploded)
         {
             //RUCHITA - Handle crowd booing here, player didn't click a firework
+            colorText.GetComponent<Text>().text = booing;
+            Audio.PlayOneShot(booingAudio);
             Debug.Log("BOO!!!");
             alreadyExploded = true;
         }
