@@ -18,6 +18,13 @@ public class FireworkManager : MonoBehaviour
     public AudioClip booingAudio;
     public AudioClip explosionAudio;
     public AudioClip launchAudio;
+    public AudioClip redAudio;
+    public AudioClip greenAudio;
+    public AudioClip blueAudio;
+    public AudioClip purpleAudio;
+    public AudioClip whiteAudio;
+    public AudioClip yellowAudio;
+
     
     //Private
     private List<Firework> fireworks;
@@ -70,6 +77,7 @@ public class FireworkManager : MonoBehaviour
             //to use when you have the text draw. If you have any questions just message me @haroldthehobo in the discord channel.
             colorText.GetComponent<Text>().text = GetStringFromEnumValue(nextColorCalled);
             colorText.GetComponent<Text>().color = GetColorFromEnumValue(nextColorCalled);
+            Audio.PlayOneShot(GetAudioFromEnumValues(nextColorCalled));
             Debug.Log("We want " + GetStringFromEnumValue(nextColorCalled) + "!");
         }
         if (launchTimer <= -3.0f && fireworksLaunched == false)
@@ -166,7 +174,26 @@ public class FireworkManager : MonoBehaviour
             alreadyExploded = true;
         }
     }
-
+    public AudioClip GetAudioFromEnumValues(FireworkColors col)
+    {
+        switch(col)
+        {
+            case FireworkColors.Red:
+                return redAudio;
+            case FireworkColors.Green:
+                return greenAudio;
+            case FireworkColors.Blue:
+                return blueAudio;
+            case FireworkColors.Purple:
+                return purpleAudio;
+            case FireworkColors.White:
+                return whiteAudio;
+            case FireworkColors.Yellow:
+                return yellowAudio;
+            default:
+                return redAudio;
+        }
+    }
     public Color GetColorFromEnumValue(FireworkColors col)
     {
         switch (col)
