@@ -37,7 +37,7 @@ public class Firework : MonoBehaviour
         {
             if (rigid.velocity.magnitude > 0)
             {
-                transform.rotation = Quaternion.Euler(0, 0, Mathf.Rad2Deg * Mathf.Atan(rigid.velocity.y / rigid.velocity.x) - 90);
+                transform.rotation = Quaternion.Euler(0, 0, Mathf.Rad2Deg * Mathf.Atan(rigid.velocity.y / rigid.velocity.x));
             }
             resetTimer -= Time.deltaTime;
             if (resetTimer <= 0)
